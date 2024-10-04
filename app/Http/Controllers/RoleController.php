@@ -10,7 +10,8 @@ class RoleController extends Controller
     //
     public function manageRole()
     {
-        return view('manage-roles');
+        $roles = Role::whereNotIn('name', ['Super Admin'])->get();
+        return view('manage-roles', compact('roles'));
     }
     public function createRole(Request $request)
     {
@@ -22,6 +23,17 @@ class RoleController extends Controller
                 'name' => $validatedData['role'],
             ]);
             return response()->json(['success' => true, 'message' => 'Role created successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    public function deleteRole(Request $request)
+    {
+        try {
+            $role = Role::find($request->role_id);
+            // dd($role);
+            $role->delete();
+            return response()->json(['success' => true, 'message' => 'Role deleted successfully!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }

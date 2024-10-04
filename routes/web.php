@@ -15,4 +15,5 @@ Route::group(['middleware' => ['isAuthenticated']], function () {
 
     Route::get('/manage-roles', [RoleController::class, 'manageRole'])->name('manageRole');
     Route::post('/create-role', [RoleController::class, 'createRole'])->name('createRole');
+    Route::post('/delete-role', [RoleController::class, 'deleteRole'])->name('deleteRole');
 });
