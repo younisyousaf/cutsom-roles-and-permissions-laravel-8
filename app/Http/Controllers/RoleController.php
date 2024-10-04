@@ -27,6 +27,26 @@ class RoleController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+
+    public function updateRole(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'role' => 'required|max:255',
+            ]);
+            $role = Role::find($request->role_id);
+            $role->update([
+                'name' => $validatedData['role'],
+            ]);
+            return response()->json(['success' => true, 'message' => 'Role updated successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+
+
     public function deleteRole(Request $request)
     {
         try {

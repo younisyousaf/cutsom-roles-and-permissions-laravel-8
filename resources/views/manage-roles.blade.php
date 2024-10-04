@@ -13,7 +13,7 @@
             <table class="table table-bordered table-striped mt-2">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col">#</th>
+                        <th scope="col">S.No</th>
                         <th scope="col">Role</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -26,7 +26,9 @@
                             <td>{{ $role->name }}</td>
                             <td>
                                 @if (strtolower($role->name) != 'user')
-                                    <button href="" class="btn btn-primary">Edit</button>
+                                    <button href="" class="btn btn-primary editRoleBtn" data-id="{{ $role->id }}"
+                                        data-name="{{ $role->name }}" data-bs-toggle="modal"
+                                        data-bs-target="#updateRoleModal">Edit</button>
                                     <button type="button" class="btn btn-danger deleteRoleBtn"
                                         data-id="{{ $role->id }}" data-name="{{ $role->name }}" data-bs-toggle="modal"
                                         data-bs-target="#deleteRoleModal">Delete</button>
@@ -38,32 +40,6 @@
             </table>
         </div>
 
-        <!--Delete Role Modal -->
-        <div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <form id="deleteRoleForm">
-                        @csrf
-                        {{-- @method('DELETE') --}}
-                        <div class="modal-header">
-
-                            <h5 class="modal-title" id="deleteRoleModalLabel">Delete Role</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" name="role_id" id="deleteRoleId">
-                            <p>Are you sure you want to delete this <strong><span class="delete-role"></span></strong> Role?
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-danger confirmDeleteBtn">Delete</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
 
         <!--Create Role Modal -->
@@ -92,12 +68,67 @@
                 </div>
             </div>
         </div>
+        <!--Update Role Modal -->
+        <div class="modal fade" id="updateRoleModal" tabindex="-1" aria-labelledby="updateRoleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="updateRoleForm">
+                        @csrf
+                        <input type="hidden" name="role_id" id="updateRoleId">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="updateRoleModalLabel">Update Role</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <input type="text" class="form-control" id="updateRoleName" name="role"
+                                    placeholder="Enter role">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary updateRoleBtn">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--Delete Role Modal -->
+        <div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="deleteRoleForm">
+                        @csrf
+                        <div class="modal-header">
+
+                            <h5 class="modal-title" id="deleteRoleModalLabel">Delete Role</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="role_id" id="deleteRoleId">
+                            <p>Are you sure you want to delete this <strong><span class="delete-role"></span></strong>
+                                Role?
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger confirmDeleteBtn">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
 @push('script')
     <script>
         $(document).ready(function() {
+            // Create Role
             $('#createRoleForm').on('submit', function(e) {
                 e.preventDefault();
                 $('.createRoleBtn').prop('disabled', true);
@@ -108,6 +139,37 @@
                     data: formData,
                     success: function(response) {
                         $('.createRoleBtn').prop('disabled', false);
+                        if (response.success) {
+                            // alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            });
+
+            // Update Role
+
+            $('.editRoleBtn').on('click', function() {
+                var roleId = $(this).data('id');
+                var roleName = $(this).data('name');
+
+                $('#updateRoleId').val(roleId);
+                $('#updateRoleName').val(roleName);
+
+            })
+
+            $('#updateRoleForm').on('submit', function(e) {
+                e.preventDefault();
+                $('.updateRoleBtn').prop('disabled', true);
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: "{{ route('updateRole') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        $('.updateRoleBtn').prop('disabled', false);
                         if (response.success) {
                             // alert(response.message);
                             location.reload();
