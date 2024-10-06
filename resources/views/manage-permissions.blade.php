@@ -35,6 +35,7 @@
             </tbody>
         </table>
     </div>
+    {{-- Create Permission Model --}}
     <div class="modal fade" id="createPermissionModal" tabindex="-1" aria-labelledby="createPermissionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -55,6 +56,59 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary createPermissionBtn">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{-- Update Permission Modal --}}
+    <div class="modal fade" id="updatePermissionModal" tabindex="-1" aria-labelledby="updatePermissionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="updatePermissionForm">
+                    @csrf
+                    <input type="hidden" name="permission_id" id="updatePermissionId">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updatePermissionModalLabel">Update Permission</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="permission">Permission</label>
+                            <input type="text" class="form-control" id="updatePermissionName" name="permission"
+                                placeholder="Enter permission">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary updatePermissionBtn">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{-- Delete Permission Modal  --}}
+    <div class="modal fade" id="deletePermissionModal" tabindex="-1" aria-labelledby="deletePermissionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="deletePermissionForm">
+                    @csrf
+                    <div class="modal-header">
+
+                        <h5 class="modal-title" id="deletePermissionModalLabel">Delete Permission</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="permission_id" id="deletePermissionId">
+                        <p>Are you sure you want to delete this <strong><span class="delete-permission"></span></strong>
+                            Permission?
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger confirmDeleteBtn">Delete</button>
                     </div>
                 </form>
             </div>
@@ -85,6 +139,63 @@
                     }
                 })
             })
+            //Update Permission
+            $('.editPermissionBtn').on('click', function() {
+                var permissionId = $(this).data('id');
+                var permissionName = $(this).data('name');
+
+                $('#updatePermissionId').val(permissionId);
+                $('#updatePermissionName').val(permissionName);
+
+            })
+
+            $('#updatePermissionForm').on('submit', function(e) {
+                e.preventDefault();
+                $('.updatePermissionBtn').prop('disabled', true);
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: "{{ route('updatePermission') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        $('.updatePermissionBtn').prop('disabled', false);
+                        if (response.success) {
+                            // alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            });
+            // Delete Permission
+            $('.deletePermissionBtn').on('click', function() {
+                var permissionId = $(this).data('id');
+                var permissionName = $(this).data('name');
+
+                $('#deletePermissionId').val(permissionId);
+                $('.delete-permission').text(permissionName);
+            })
+
+            $('#deletePermissionForm').on('submit', function(e) {
+                e.preventDefault();
+                $('.confirmDeleteBtn').prop('disabled', true);
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: "{{ route('deletePermission') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        $('.confirmDeleteBtn').prop('disabled', false);
+                        if (response.success) {
+                            // alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            });
         })
     </script>
 @endpush

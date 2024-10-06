@@ -26,5 +26,7 @@ Route::group(['middleware' => ['isAuthenticated']], function () {
     Route::controller(PermissionController::class)->group(function () {
         Route::get('/manage-permissions', 'managePermission')->name('managePermission');
         Route::post('/create-permission', 'createPermission')->name('createPermission');
+        Route::post('/update-permission', 'updatePermission')->name('updatePermission');
+        Route::post('/delete-permission', 'deletePermission')->name('deletePermission');
     });
 });
