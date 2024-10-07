@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Permission;
+use App\Models\PermissionRole;
+use App\Models\Role;
 
 class PermissionController extends Controller
 {
@@ -52,6 +54,41 @@ class PermissionController extends Controller
             return response()->json(['success' => true, 'message' => 'Permission deleted successfully!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function assignPermissionRole()
+    {
+        $roles = Role::whereNotIn('name', ['Super Admin'])->get();
+        $permissions = Permission::all();
+        return  view('assign-permission-role', compact('permissions', 'roles'));
+    }
+    public function createPermissionRole(Request $request)
+    {
+        try {
+            $isPermissionToRoleExist = PermissionRole::where([
+                'permission_id' => $request->permission_id,
+                'role_id' => $request->role_id
+            ])->first();
+            if ($isPermissionToRoleExist) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permission already assigned to selected role!',
+                ]);
+            }
+            PermissionRole::create([
+                'permission_id' => $request->permission_id,
+                'role_id' => $request->role_id
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Permission assigned to selected role successfully!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 }

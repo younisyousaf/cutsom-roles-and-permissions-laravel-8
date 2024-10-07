@@ -14,6 +14,9 @@
                     <a class="nav-link active" aria-current="page"
                         href="{{ route('managePermission') }}">Permissions</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('assignPermissionRole') }}" class="nav-link active">Assign Permission - Role</a>
+                </li>
             </ul>
             <button class="btn btn-danger float-end logout-user">Logout</button>
 
