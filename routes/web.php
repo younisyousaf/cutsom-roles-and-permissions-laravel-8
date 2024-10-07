@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['guest']], function () {
     Route::get('/', [AuthController::class, 'loadLogin'])->name('loadLogin');
     Route::post('/', [AuthController::class, 'userLogin'])->name('userLogin');
+    Route::get('/register', [AuthController::class, 'loadRegister'])->name('loadRegister');
+    Route::post('/user-register', [AuthController::class, 'userRegister'])->name('userRegister');
 });
 
 Route::group(['middleware' => ['isAuthenticated']], function () {
