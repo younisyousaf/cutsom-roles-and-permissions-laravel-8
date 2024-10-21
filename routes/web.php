@@ -33,5 +33,6 @@ Route::group(['middleware' => ['isAuthenticated']], function () {
         // Permission to Roles Assignment Routes
         Route::get('/assign-permission-role', 'assignPermissionRole')->name('assignPermissionRole');
         Route::post('/create-permission-role', 'createPermissionRole')->name('createPermissionRole');
+        Route::post('/update-permission-role', 'updatePermissionRole')->name('updatePermissionRole');
     });
 });

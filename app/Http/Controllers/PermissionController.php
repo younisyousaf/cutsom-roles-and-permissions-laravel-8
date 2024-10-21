@@ -61,7 +61,9 @@ class PermissionController extends Controller
     {
         $roles = Role::whereNotIn('name', ['Super Admin'])->get();
         $permissions = Permission::all();
-        return  view('assign-permission-role', compact('permissions', 'roles'));
+        $permissionsWithRoles = Permission::with('roles')->whereHas('roles')->get();
+        // dd($permissionsWithRoles);
+        return  view('assign-permission-role', compact('permissions', 'roles', 'permissionsWithRoles'));
     }
     public function createPermissionRole(Request $request)
     {
@@ -89,6 +91,26 @@ class PermissionController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
+        }
+    }
+    public function updatePermissionRole(Request $request)
+    {
+        try {
+            $roles = $request->roles;
+            PermissionRole::where('permission_id', $request->permission_id)->delete();
+            $insertData = [];
+            foreach ($roles as $role) {
+                $insertData[] = [
+                    'permission_id' => $request->permission_id,
+                    'role_id' => $role
+                ];
+            }
+
+            PermissionRole::insert($insertData);
+
+            return response()->json(['success' => true, 'message' => 'Permission updated successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 }
