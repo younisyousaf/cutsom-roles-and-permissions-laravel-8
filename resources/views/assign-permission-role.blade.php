@@ -38,7 +38,9 @@
                             <td>
                                 <button class="btn btn-primary editPermissionBtn" data-id="{{ $permission->id }}"
                                     data-bs-toggle="modal" data-bs-target="#updateAssignPermissionRoleModel">Edit</button>
-                                <button class="btn btn-danger">Delete</button>
+                                <button class="btn btn-danger deletePermissionBtn" data-bs-toggle="modal"
+                                    data-bs-target="#deleteAssignPermissionRoleModel" data-id="{{ $permission->id }}"
+                                    data-name="{{ $permission->name }}">Delete</button>
                             </td>
                         </tr>
                     @endforeach
@@ -154,6 +156,34 @@
                 </div>
             </div>
         </div>
+        {{-- Delete Assign Permission to Role Model --}}
+        <div class="modal fade" id="deleteAssignPermissionRoleModel" tabindex="-1"
+            aria-labelledby="deleteAssignPermissionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="deleteAssignPermissionRoleForm">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteAssignPermissionModalLabel">Delete Assign Permission
+                                to Role</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="permission_id" id="deleteAssignPermissionId">
+                            <p>Are you sure you want to delete <strong><span
+                                        class="delete-permission-role"></span></strong>
+                                Permission?
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger deleteAssignPermissionRoleBtn">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
     </div>
 @endsection
@@ -207,6 +237,36 @@
                 })
             })
         });
+        // Delete Assign Permission-Role
+        $('.deletePermissionBtn').on('click', function(e) {
+            e.preventDefault();
+            var permissionId = $(this).data('id');
+            var permissionName = $(this).data('name');
+            $('#deleteAssignPermissionId').val(permissionId);
+            $('.delete-permission-role').text(permissionName);
+
+        });
+        $('#deleteAssignPermissionRoleForm').on('submit', function(e) {
+            e.preventDefault();
+            $('.deleteAssignPermissionRoleBtn').prop('disabled', true);
+            var formData = $(this).serialize();
+            $.ajax({
+                url: "{{ route('deletePermissionRole') }}",
+                type: "POST",
+                data: formData,
+                success: function(response) {
+                    $('.deleteAssignPermissionRoleBtn').prop('disabled', false);
+                    if (response.success) {
+                        // alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        });
+
+        // Dropdown
         document.addEventListener('DOMContentLoaded', function() {
             // Select the button and dropdown content
             const dropdownButton = document.querySelector('.dropdown button');

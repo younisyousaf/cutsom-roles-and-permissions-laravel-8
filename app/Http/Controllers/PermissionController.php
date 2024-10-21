@@ -113,4 +113,13 @@ class PermissionController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+    public function deletePermissionRole(Request $request)
+    {
+        try {
+            PermissionRole::where('permission_id', $request->permission_id)->delete();
+            return response()->json(['success' => true, 'message' => 'Permission deleted successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }
