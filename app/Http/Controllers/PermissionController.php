@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Permission;
 use App\Models\PermissionRole;
 use App\Models\Role;
+use App\Models\RoutePermission;
+use Illuminate\Support\Facades\Route;
 
 class PermissionController extends Controller
 {
@@ -120,6 +122,59 @@ class PermissionController extends Controller
             return response()->json(['success' => true, 'message' => 'Permission deleted successfully!']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    // Assign Permissions to Routes
+    public function assignPermissionRoute()
+    {
+        $routes = Route::getRoutes();
+        $routeGroupName = 'isAuthenticated';
+        $routeDetails = [];
+        foreach ($routes as $route) {
+            $middlewares = $route->gatherMiddleware();
+            if (in_array($routeGroupName, $middlewares)) {
+                $routeName = $route->getName();
+                if ($routeName !== 'loadDashboard' && $routeName !== 'logout') {
+                    $routeDetails[] = [
+                        'name' => $routeName,
+                        'uri' => $route->uri(),
+                    ];
+                }
+            }
+        }
+        // dd($routeDetails);
+        $permissions = Permission::all();
+        $routerPermissions = RoutePermission::with('permission')->get();
+        // dd($routerPermissions);
+        return view('assign-permission-route', compact(['permissions', 'routeDetails', 'routerPermissions']));
+    }
+    public function createPermissionRoute(Request $request)
+    {
+        try {
+            $isRouteExist = RoutePermission::where([
+                'permission_id' => $request->permission_id,
+                // 'router' => $request->route
+            ])->first();
+            if ($isRouteExist) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permission already assigned!',
+                ]);
+            }
+            RoutePermission::create([
+                'permission_id' => $request->permission_id,
+                'router' => $request->route
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Permission assigned to selected route successfully!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 }

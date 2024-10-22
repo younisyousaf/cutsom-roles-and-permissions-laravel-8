@@ -8,15 +8,18 @@
         <div class="collapse navbar-collapse" id="navbarScroll">
             <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ route('manageRole') }}">Roles</a>
+                    <a class="nav-link " aria-current="page" href="{{ route('manageRole') }}">Roles</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page"
-                        href="{{ route('managePermission') }}">Permissions</a>
+                    <a class="nav-link " aria-current="page" href="{{ route('managePermission') }}">Permissions</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('assignPermissionRole') }}" class="nav-link active">Assign Permission - Role</a>
+                    <a href="{{ route('assignPermissionRole') }}" class="nav-link">Assign Permission - Role</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('assignPermissionRoute') }}" class="nav-link">Assign Permission - Route</a>
+                </li>
+
             </ul>
             <button class="btn btn-danger float-end logout-user">Logout</button>
 
