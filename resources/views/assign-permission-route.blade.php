@@ -32,8 +32,13 @@
                             <td>{{ $permission->router }}</td>
 
                             <td>
-                                <button class="btn btn-primary editPermissionBtn">Edit</button>
-                                <button class="btn btn-danger deletePermissionBtn">Delete</button>
+                                <button class="btn btn-primary editPermissionBtn" data-id="{{ $permission->id }}"
+                                    data-permission-id="{{ $permission->permission_id }}"
+                                    data-router="{{ $permission->router }}" data-bs-toggle="modal"
+                                    data-bs-target="#updatePermissionRouteModel">Edit</button>
+                                <button class="btn btn-danger deletePermissionBtn" data-id="{{ $permission->id }}"
+                                    data-name="{{ $permission->permission->name }}" data-bs-toggle="modal"
+                                    data-bs-target="#deletePermissionRouteModal">Delete</button>
                             </td>
                         </tr>
                     @endforeach
@@ -81,6 +86,75 @@
                 </div>
             </div>
         </div>
+        {{-- Update Assign Permission to Role Model --}}
+        <div class="modal fade" id="updatePermissionRouteModel" tabindex="-1" aria-labelledby="updatePermissionModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="updatePermissionRouteForm">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="updatePermissionModalLabel"> Update Assign Permission to Route</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="updatePermissionRouteId">
+
+                            <div class="form-group">
+                                <label for="permissionId">Permission</label>
+                                <select name="permission_id" id="permissionUpdateId" class="form-control" required>
+                                    <option value="">Select Permission</option>
+                                    @foreach ($permissions as $permission)
+                                        <option value="{{ $permission->id }}">{{ $permission->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="route">Route</label>
+                                <select name="router" class="form-control" id="updateRoute" required>
+                                    <option value="">Select Route</option>
+                                    @foreach ($routeDetails as $route)
+                                        <option value="{{ $route['name'] }}">{{ $route['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary updateAssignPermissionRouteBtn">Assign</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- Delete Assign Permission to Role Model --}}
+        <div class="modal fade" id="deletePermissionRouteModal" tabindex="-1"
+            aria-labelledby="deletePermissionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="deletePermissionRouteForm">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deletePermissionModalLabel">Delete Assign Permission to Route</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="deletePermissionRouteId">
+                            <p>Are you sure you want to delete <strong><span
+                                        class="delete-permission-role"></span></strong>
+                                Permission?
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger deleteAssignPermissionRouteBtn">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -88,7 +162,7 @@
     <script>
         $(document).ready(function() {
 
-
+            // Assign Permission to Route
             $('#assignPermissionRouteForm').on('submit', function(e) {
                 e.preventDefault();
                 $('.assignPermissionRouteBtn').prop('disabled', true);
@@ -99,6 +173,61 @@
                     data: formData,
                     success: function(response) {
                         $('.assignPermissionRouteBtn').prop('disabled', false);
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            });
+
+            // Update Assign Permission to Route
+            $('.editPermissionBtn').on('click', function() {
+                var id = $(this).data('id');
+                var permissionId = $(this).data('permission-id');
+                var route = $(this).data('router');
+                console.log(route, id, permissionId);
+                $('#updatePermissionRouteId').val(id);
+                $('#permissionUpdateId').val(permissionId);
+                $('#updateRoute').val(route);
+            });
+
+            $('#updatePermissionRouteForm').on('submit', function(e) {
+                e.preventDefault();
+                $('.updateAssignPermissionRouteBtn').prop('disabled', true);
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: "{{ route('updatePermissionRoute') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        $('.updateAssignPermissionRouteBtn').prop('disabled', false);
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            });
+            // Delete Assign Permission to Route
+            $('.deletePermissionBtn').on('click', function() {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                $('#deletePermissionRouteId').val(id);
+                $('.delete-permission-role').text(name);
+            });
+            $('#deletePermissionRouteForm').on('submit', function(e) {
+                e.preventDefault();
+                $('.deleteAssignPermissionRouteBtn').prop('disabled', true);
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: "{{ route('deletePermissionRoute') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        $('.deleteAssignPermissionRouteBtn').prop('disabled', false);
                         if (response.success) {
                             location.reload();
                         } else {

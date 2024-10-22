@@ -177,4 +177,49 @@ class PermissionController extends Controller
             ]);
         }
     }
+    public function updatePermissionRoute(Request $request)
+    {
+        try {
+            $isPermissionExist = RoutePermission::whereNotIn('id', [$request->id])
+                ->where([
+                    'permission_id' => $request->permission_id,
+                ])->first();
+            $isRouteExist = RoutePermission::where([
+                'router' => $request->router,
+            ])->first();
+            if ($isPermissionExist) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permission already assigned!',
+                ]);
+            } else if ($isRouteExist) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Route already assigned!',
+                ]);
+            }
+            RoutePermission::where('id', $request->id)->update([
+                'permission_id' => $request->permission_id,
+                'router' => $request->router
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Permission updated to selected route successfully!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+    public function deletePermissionRoute(Request $request)
+    {
+        try {
+            RoutePermission::where('id', $request->id)->delete();
+            return response()->json(['success' => true, 'message' => 'Permission deleted successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }
