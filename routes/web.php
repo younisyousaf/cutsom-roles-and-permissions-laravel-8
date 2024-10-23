@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['guest']], function () {
@@ -40,5 +41,11 @@ Route::group(['middleware' => ['isAuthenticated']], function () {
         Route::post('/create-permission-route', 'createPermissionRoute')->name('createPermissionRoute');
         Route::post('/update-permission-route', 'updatePermissionRoute')->name('updatePermissionRoute');
         Route::post('/delete-permission-route', 'deletePermissionRoute')->name('deletePermissionRoute');
+
+        // Manage User Controller Routes
+        Route::get('/manage-users', [UserController::class, 'users'])->name('users');
+        Route::post('/create-user', [UserController::class, 'createUser'])->name('createUser');
+        Route::post('/update-user', [UserController::class, 'updateUser'])->name('updateUser');
+        Route::post('/delete-user', [UserController::class, 'deleteUser'])->name('deleteUser');
     });
 });
