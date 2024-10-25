@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function users()
     {
-        $users = User::with('role')->where('role_id', '!=', 1)->get();
+        $users = User::with('role')->where('role_id', '!=', 1)->where('id', '!=', auth()->user()->id)->get();
         $roles = Role::where('name', '!=', 'Super Admin')->get();
         // dd($users);
         return view('users', compact(['roles', 'users']));

@@ -4,9 +4,12 @@
         <div class="d-flex justify-content-between">
             <h2>Manage Users</h2>
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModel">
-                Create User
-            </button>
+            {{-- This will check the permission if this route has permission to create user, If not the button will not show --}}
+            @if (auth()->user()->hasPermissionsToRoute('createUser'))
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModel">
+                    Create User
+                </button>
+            @endif
 
         </div>
 
@@ -22,23 +25,29 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    @php
+                        $hasEditPermission = auth()->user()->hasPermissionsToRoute('editUser');
+                        $hasDeletePermission = auth()->user()->hasPermissionsToRoute('deleteUser');
+                    @endphp
                     @foreach ($users as $user)
                         {{-- dd($user); --}}
                         <tr>
-
                             <th scope="row">{{ $loop->iteration }}</th>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->role->name }}</td>
                             <td>
-                                <button class="btn btn-primary editUserBtn" data-id="{{ $user->id }}"
-                                    data-name="{{ $user->name }}" data-email="{{ $user->email }}"
-                                    data-role-id="{{ $user->role->id }}" data-bs-toggle="modal"
-                                    data-bs-target="#updateUserModal">Edit</button>
-                                <button class="btn btn-danger deleteUserBtn" data-id="{{ $user->id }}"
-                                    data-name="{{ $user->name }}" data-bs-toggle="modal"
-                                    data-bs-target="#deleteUserModal">Delete</button>
+                                @if ($hasEditPermission)
+                                    <button class="btn btn-primary editUserBtn" data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}" data-email="{{ $user->email }}"
+                                        data-role-id="{{ $user->role->id }}" data-bs-toggle="modal"
+                                        data-bs-target="#updateUserModal">Edit</button>
+                                @endif
+                                @if ($hasDeletePermission)
+                                    <button class="btn btn-danger deleteUserBtn" data-id="{{ $user->id }}"
+                                        data-name="{{ $user->name }}" data-bs-toggle="modal"
+                                        data-bs-target="#deleteUserModal">Delete</button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
