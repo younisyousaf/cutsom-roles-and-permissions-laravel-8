@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
+
 
 class User extends Authenticatable
 {
@@ -46,5 +48,19 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+    public function hasPermissionsToRoute($route)
+    {
+        if ($this->role_id == 1) {
+            return true;
+        }
+        $permissions = $this->role->permissions;
+        // Log::info("Permissions: " . $permissions);
+        foreach ($permissions as $permission) {
+            if ($permission->routes->contains('router', $route)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

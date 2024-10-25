@@ -22,7 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    dd($users);
+
                     @foreach ($users as $user)
                         {{-- dd($user); --}}
                         <tr>
