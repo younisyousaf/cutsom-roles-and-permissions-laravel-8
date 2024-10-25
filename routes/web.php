@@ -16,6 +16,8 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['isAuthenticated']], function () {
     Route::get('/dashboard', [AuthController::class, 'loadDashboard'])->name('loadDashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+Route::group(['middleware' => ['isAuthenticated', 'havePermission']], function () {
 
     // Manage Roles Routes
     Route::controller(RoleController::class)->group(function () {
